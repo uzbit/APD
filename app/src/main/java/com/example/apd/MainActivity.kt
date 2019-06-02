@@ -10,6 +10,7 @@ import android.widget.Toast
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 import android.graphics.Color
+import android.widget.TextView
 
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        costPerPackTextView.requestFocus()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -44,46 +46,32 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
+    fun getVal(tv: TextView, err: String): Double {
+        var result = -1.0
+        if (!tv.text.toString().isNullOrEmpty()){
+            result = tv.text.toString().toDouble()
+        } else {
+            Toast.makeText(this, err, Toast.LENGTH_LONG).show()
+            result = -1.0
+        }
+        return result
+    }
+
     fun calculateAPD(view: View){
         view.hideKeyboard()
 
-        var costPerPack = 0.0
-        if (!costPerPackTextView.text.toString().isNullOrEmpty()){
-            costPerPack = costPerPackTextView.text.toString().toDouble()
-        } else {
-            Toast.makeText(this, "Requires Cost per Boozpack!", Toast.LENGTH_LONG).show()
-            return
-        }
+        var costPerPack = this.getVal(costPerPackTextView, "Requires Cost per Boozpack!")
+        var countPerPack = this.getVal(countPerPackTextView, "Requires Count per Boozpack!")
+        var volumePerUnit = this.getVal(volumePerUnitTextView, "Requires Volume per Boozski!")
+        var alcoholPer100ML = this.getVal(alcoholPerUnitTextView, "Requires Booze per Boozski!")
 
-        var countPerPack = 0.0
-        if (!countPerPackTextView.text.toString().isNullOrEmpty()){
-            countPerPack = countPerPackTextView.text.toString().toDouble()
-        } else {
-            Toast.makeText(this, "Requires Count per Boozski!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        var volumePerUnit = 0.0
-        if (!volumePerUnitTextView.text.toString().isNullOrEmpty()){
-            volumePerUnit = volumePerUnitTextView.text.toString().toDouble()
-        } else {
-            Toast.makeText(this, "Requires Volume per Boozski!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        var alcoholPer100ML = 0.0
-        if (!alcoholPerUnitTextView.text.toString().isNullOrEmpty()){
-            alcoholPer100ML = alcoholPerUnitTextView.text.toString().toDouble()
-        } else {
-            Toast.makeText(this, "Requires Booze per Boozski!", Toast.LENGTH_LONG).show()
-            return
-        }
+        if (costPerPack < 0 || countPerPack < 0 || volumePerUnit < 0 || alcoholPer100ML < 0) return
 
         var costPerUnit = costPerPack / countPerPack
         var costPer100ML = (costPerUnit / volumePerUnit) * 100
         var apd = (alcoholPer100ML / costPer100ML)
 
-        var txt = String.format("%.2f Alcohols Per Dollar (ml/$)", apd)
+        var txt = String.format("%.2f Alcohol Per Dollar (ml/$)", apd)
         var txtPostfix = ""
         if (apd > 5.0){
             txtPostfix = " ... get lit!"

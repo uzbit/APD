@@ -5,9 +5,17 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/wootrex/AndroidStudioProjects/keystores/APDkeystore.jks')
+            storePassword 'butterfingers'
+            keyAlias = 'release'
+            keyPassword 'fingerbutters'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.apd"
+        applicationId "com.wootrex.apd"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
@@ -18,6 +26,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
 }
